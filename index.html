@@ -1,0 +1,4442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>YEADI STREAM — Admin Panel</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ink: "#07080d",
+            panel: "#0d1018",
+            panel2: "#121722",
+            line: "#202633",
+            accent: "#7c5cff",
+            cyan: "#19d3ff",
+            danger: "#ff5570",
+            success: "#2ee59d"
+          }
+        }
+      }
+    }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      background: #07080d;
+      color: #eef2ff;
+      font-family: Inter, sans-serif;
+    }
+
+    body {
+      overflow-x: hidden;
+    }
+
+    .brand {
+      font-family: "Space Grotesk", sans-serif;
+    }
+
+    .glass {
+      background: rgba(13,16,24,.88);
+      border: 1px solid #202633;
+      backdrop-filter: blur(18px);
+    }
+
+    .input {
+      width: 100%;
+      background: #090c12;
+      border: 1px solid #252c39;
+      color: #eef2ff;
+      border-radius: 12px;
+      padding: 12px 13px;
+      outline: none;
+      transition: .2s;
+    }
+
+    .input:focus {
+      border-color: #7c5cff;
+      box-shadow: 0 0 0 3px rgba(124,92,255,.12);
+    }
+
+    textarea.input {
+      min-height: 110px;
+      resize: vertical;
+    }
+
+    .btn {
+      border-radius: 11px;
+      padding: 10px 14px;
+      font-weight: 700;
+      transition: .18s;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .primary {
+      background: linear-gradient(135deg,#7c5cff,#5d45df);
+      color: white;
+    }
+
+    .secondary {
+      background: #171c27;
+      border: 1px solid #293142;
+      color: white;
+    }
+
+    .danger {
+      background: rgba(255,85,112,.1);
+      color: #ff8295;
+      border: 1px solid rgba(255,85,112,.25);
+    }
+
+    .nav {
+      color: #9ca6b8;
+      border: 1px solid transparent;
+    }
+
+    .nav:hover,
+    .nav.active {
+      color: white;
+      background: #121722;
+      border-color: #252c39;
+    }
+
+    .grid-bg {
+      background-image:
+        radial-gradient(
+          rgba(255,255,255,.06) 1px,
+          transparent 1px
+        );
+      background-size: 22px 22px;
+    }
+
+    .hidden-view {
+      display: none !important;
+    }
+
+    .poster {
+      aspect-ratio: 2 / 3;
+      object-fit: cover;
+      background: #10141d;
+    }
+
+    .toast {
+      animation: toastIn .25s ease;
+    }
+
+    @keyframes toastIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .switch {
+      width: 46px;
+      height: 26px;
+      position: relative;
+      display: inline-block;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      inset: 0;
+      background: #252c39;
+      border-radius: 99px;
+      cursor: pointer;
+      transition: .2s;
+    }
+
+    .slider:before {
+      content: "";
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      left: 3px;
+      top: 3px;
+      background: white;
+      border-radius: 50%;
+      transition: .2s;
+    }
+
+    .switch input:checked + .slider {
+      background: #7c5cff;
+    }
+
+    .switch input:checked + .slider:before {
+      transform: translateX(20px);
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- =========================================================
+     LOGIN
+========================================================= -->
+
+<section
+  id="loginScreen"
+  class="min-h-screen flex items-center justify-center p-6 grid-bg"
+>
+
+  <div class="w-full max-w-md">
+
+    <div class="text-center mb-8">
+
+      <div class="brand text-4xl font-extrabold">
+        YEADI <span class="text-accent">STREAM</span>
+      </div>
+
+      <p class="text-slate-400 mt-2">
+        Secure Admin Control Center
+      </p>
+
+    </div>
+
+    <div class="glass rounded-2xl p-7">
+
+      <h1 class="text-2xl font-bold">
+        Admin Sign In
+      </h1>
+
+      <p class="text-sm text-slate-500 mt-1 mb-6">
+        Sign in using your Firebase admin account.
+      </p>
+
+      <form id="loginForm" class="space-y-4">
+
+        <div>
+          <label class="text-sm text-slate-300">
+            Email
+          </label>
+
+          <input
+            id="loginEmail"
+            class="input mt-2"
+            type="email"
+            placeholder="admin@example.com"
+            required
+          >
+        </div>
+
+        <div>
+          <label class="text-sm text-slate-300">
+            Password
+          </label>
+
+          <input
+            id="loginPassword"
+            class="input mt-2"
+            type="password"
+            placeholder="••••••••"
+            required
+          >
+        </div>
+
+        <button
+          class="btn primary w-full"
+          type="submit"
+        >
+          Sign In
+        </button>
+
+      </form>
+
+      <div
+        id="loginError"
+        class="hidden mt-4 rounded-xl border border-rose-500/20 bg-rose-500/10 text-rose-300 p-3 text-sm"
+      ></div>
+
+    </div>
+
+    <p class="text-center text-xs text-slate-600 mt-5">
+      YEADI STREAM • ADMIN ONLY
+    </p>
+
+  </div>
+
+</section>
+
+
+<!-- =========================================================
+     MAIN APP
+========================================================= -->
+
+<div id="app" class="hidden min-h-screen">
+
+  <!-- SIDEBAR -->
+
+  <aside
+    class="fixed left-0 top-0 bottom-0 w-64 border-r border-line bg-ink z-40 flex flex-col"
+  >
+
+    <div class="px-6 py-6 border-b border-line">
+
+      <div class="brand text-2xl font-extrabold">
+        YEADI <span class="text-accent">STREAM</span>
+      </div>
+
+      <div class="text-[11px] uppercase tracking-[.2em] text-slate-600 mt-1">
+        ADMIN CONTROL
+      </div>
+
+    </div>
+
+
+    <nav class="p-4 space-y-1 overflow-y-auto flex-1">
+
+      <button class="nav active w-full text-left px-4 py-3 rounded-xl"
+        data-view="dashboard">
+        🏠 &nbsp; Dashboard
+      </button>
+
+      <button class="nav w-full text-left px-4 py-3 rounded-xl"
+        data-view="content">
+        🎬 &nbsp; Content Library
+      </button>
+
+      <button class="nav w-full text-left px-4 py-3 rounded-xl"
+        data-view="add">
+        ＋ &nbsp; Add Content
+      </button>
+
+      <button class="nav w-full text-left px-4 py-3 rounded-xl"
+        data-view="series">
+        📺 &nbsp; Series Manager
+      </button>
+
+      <button class="nav w-full text-left px-4 py-3 rounded-xl"
+        data-view="hero">
+        ◈ &nbsp; Hero Manager
+      </button>
+
+      <button class="nav w-full text-left px-4 py-3 rounded-xl"
+        data-view="categories">
+        #️⃣ &nbsp; Categories
+      </button>
+
+      <button class="nav w-full text-left px-4 py-3 rounded-xl"
+        data-view="announcements">
+        📢 &nbsp; Announcements
+      </button>
+
+      <button class="nav w-full text-left px-4 py-3 rounded-xl"
+        data-view="feedback">
+        💬 &nbsp; Feedback
+      </button>
+
+      <button class="nav w-full text-left px-4 py-3 rounded-xl"
+        data-view="settings">
+        ⚙️ &nbsp; Site Settings
+      </button>
+
+    </nav>
+
+
+    <div class="p-4 border-t border-line">
+
+      <div
+        id="adminEmail"
+        class="text-xs text-slate-500 truncate mb-3"
+      ></div>
+
+      <button
+        id="logoutBtn"
+        class="btn secondary w-full"
+      >
+        Sign Out
+      </button>
+
+    </div>
+
+  </aside>
+
+
+  <!-- MAIN -->
+
+  <main class="ml-64 min-h-screen">
+
+    <header
+      class="sticky top-0 z-30 h-16 border-b border-line bg-ink/85 backdrop-blur-xl flex items-center justify-between px-7"
+    >
+
+      <div>
+
+        <div
+          id="pageTitle"
+          class="font-bold text-lg"
+        >
+          Dashboard
+        </div>
+
+        <div
+          id="pageSubtitle"
+          class="text-xs text-slate-500"
+        >
+          Manage your entire YEADI STREAM website.
+        </div>
+
+      </div>
+
+
+      <div class="flex items-center gap-3">
+
+        <button
+          id="refreshBtn"
+          class="btn secondary text-sm"
+        >
+          ↻ Refresh
+        </button>
+
+        <button
+          class="btn primary text-sm"
+          onclick="openAdd('movie')"
+        >
+          ＋ Add Content
+        </button>
+
+      </div>
+
+    </header>
+
+
+    <div class="p-7">
+
+
+      <!-- =====================================================
+           DASHBOARD
+      ====================================================== -->
+
+      <section id="view-dashboard" class="view">
+
+        <div class="grid grid-cols-4 gap-4 mb-6">
+
+          <div class="glass rounded-2xl p-5">
+            <div class="text-sm text-slate-500">
+              Total Content
+            </div>
+
+            <div
+              id="statTotal"
+              class="text-3xl font-extrabold mt-2"
+            >
+              0
+            </div>
+          </div>
+
+
+          <div class="glass rounded-2xl p-5">
+            <div class="text-sm text-slate-500">
+              Movies
+            </div>
+
+            <div
+              id="statMovies"
+              class="text-3xl font-extrabold mt-2"
+            >
+              0
+            </div>
+          </div>
+
+
+          <div class="glass rounded-2xl p-5">
+            <div class="text-sm text-slate-500">
+              Series
+            </div>
+
+            <div
+              id="statSeries"
+              class="text-3xl font-extrabold mt-2"
+            >
+              0
+            </div>
+          </div>
+
+
+          <div class="glass rounded-2xl p-5">
+            <div class="text-sm text-slate-500">
+              Episodes
+            </div>
+
+            <div
+              id="statEpisodes"
+              class="text-3xl font-extrabold mt-2"
+            >
+              0
+            </div>
+          </div>
+
+        </div>
+
+
+        <div class="grid grid-cols-3 gap-5">
+
+          <div class="glass rounded-2xl p-6 col-span-2">
+
+            <h2 class="font-bold text-lg">
+              Quick Actions
+            </h2>
+
+            <p class="text-sm text-slate-500 mt-1">
+              Common publishing tasks.
+            </p>
+
+
+            <div class="grid grid-cols-3 gap-3 mt-5">
+
+              <button
+                class="btn secondary text-left p-4"
+                onclick="openAdd('movie')"
+              >
+                🎬
+                <div class="font-bold mt-2">
+                  Add Movie
+                </div>
+                <div class="text-xs text-slate-500 mt-1">
+                  Poster + stream link
+                </div>
+              </button>
+
+
+              <button
+                class="btn secondary text-left p-4"
+                onclick="openAdd('anime')"
+              >
+                ⚡
+                <div class="font-bold mt-2">
+                  Add Anime
+                </div>
+                <div class="text-xs text-slate-500 mt-1">
+                  Anime content
+                </div>
+              </button>
+
+
+              <button
+                class="btn secondary text-left p-4"
+                onclick="openAdd('series')"
+              >
+                📺
+                <div class="font-bold mt-2">
+                  Add Series
+                </div>
+                <div class="text-xs text-slate-500 mt-1">
+                  Create series
+                </div>
+              </button>
+
+
+              <button
+                class="btn secondary text-left p-4"
+                onclick="showView('hero')"
+              >
+                ◈
+                <div class="font-bold mt-2">
+                  Hero Manager
+                </div>
+                <div class="text-xs text-slate-500 mt-1">
+                  Homepage banners
+                </div>
+              </button>
+
+
+              <button
+                class="btn secondary text-left p-4"
+                onclick="showView('announcements')"
+              >
+                📢
+                <div class="font-bold mt-2">
+                  Announcement
+                </div>
+                <div class="text-xs text-slate-500 mt-1">
+                  Publish notice
+                </div>
+              </button>
+
+
+              <button
+                class="btn secondary text-left p-4"
+                onclick="showView('feedback')"
+              >
+                💬
+                <div class="font-bold mt-2">
+                  Feedback
+                </div>
+                <div class="text-xs text-slate-500 mt-1">
+                  User messages
+                </div>
+              </button>
+
+            </div>
+
+          </div>
+
+
+          <div class="glass rounded-2xl p-6">
+
+            <h2 class="font-bold text-lg">
+              How Publishing Works
+            </h2>
+
+            <div class="space-y-5 mt-5 text-sm">
+
+              <div>
+                <b class="text-white">
+                  1. Poster
+                </b>
+
+                <p class="text-slate-500 mt-1">
+                  Upload an image or paste an image URL.
+                </p>
+              </div>
+
+
+              <div>
+                <b class="text-white">
+                  2. Video
+                </b>
+
+                <p class="text-slate-500 mt-1">
+                  Paste a playable/embeddable video link.
+                </p>
+              </div>
+
+
+              <div>
+                <b class="text-white">
+                  3. Categories
+                </b>
+
+                <p class="text-slate-500 mt-1">
+                  Select categories and tags.
+                </p>
+              </div>
+
+
+              <div>
+                <b class="text-white">
+                  4. Visibility
+                </b>
+
+                <p class="text-slate-500 mt-1">
+                  Home, Trending and Hero are separate.
+                </p>
+              </div>
+
+
+              <div>
+                <b class="text-white">
+                  5. Series
+                </b>
+
+                <p class="text-slate-500 mt-1">
+                  Series → Season → Episode.
+                </p>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- =====================================================
+           CONTENT LIBRARY
+      ====================================================== -->
+
+      <section id="view-content" class="view hidden-view">
+
+        <div class="glass rounded-2xl p-5 mb-5">
+
+          <div class="flex gap-3">
+
+            <input
+              id="searchContent"
+              class="input"
+              placeholder="Search content..."
+              oninput="renderContent()"
+            >
+
+            <select
+              id="filterType"
+              class="input max-w-[180px]"
+              onchange="renderContent()"
+            >
+              <option value="">All Types</option>
+              <option value="movie">Movie</option>
+              <option value="anime">Anime</option>
+              <option value="series">Series</option>
+              <option value="season">Season</option>
+              <option value="episode">Episode</option>
+            </select>
+
+
+            <select
+              id="filterStatus"
+              class="input max-w-[180px]"
+              onchange="renderContent()"
+            >
+              <option value="">All Status</option>
+              <option value="home">Home</option>
+              <option value="trending">Trending</option>
+              <option value="hero">Hero</option>
+            </select>
+
+          </div>
+
+        </div>
+
+
+        <div
+          id="contentGrid"
+          class="grid grid-cols-5 gap-4"
+        ></div>
+
+      </section>
+
+
+      <!-- =====================================================
+           ADD CONTENT
+      ====================================================== -->
+
+      <section id="view-add" class="view hidden-view">
+
+        <div class="max-w-5xl">
+
+          <div class="glass rounded-2xl p-6">
+
+            <div class="flex justify-between items-center mb-7">
+
+              <div>
+
+                <h2
+                  id="formTitle"
+                  class="text-xl font-bold"
+                >
+                  Add Movie
+                </h2>
+
+                <p class="text-sm text-slate-500 mt-1">
+                  Create or edit website content.
+                </p>
+
+              </div>
+
+
+              <button
+                class="btn secondary"
+                onclick="resetForm()"
+              >
+                Clear
+              </button>
+
+            </div>
+
+
+            <form id="mediaForm" class="space-y-6">
+
+              <input id="editId" type="hidden">
+
+
+              <!-- TYPE -->
+
+              <div>
+
+                <label class="text-sm text-slate-300">
+                  Content Type
+                </label>
+
+                <div class="grid grid-cols-5 gap-2 mt-2">
+
+                  <button
+                    type="button"
+                    class="typeBtn btn secondary"
+                    data-type="movie"
+                    onclick="setType('movie')"
+                  >
+                    🎬 Movie
+                  </button>
+
+                  <button
+                    type="button"
+                    class="typeBtn btn secondary"
+                    data-type="anime"
+                    onclick="setType('anime')"
+                  >
+                    ⚡ Anime
+                  </button>
+
+                  <button
+                    type="button"
+                    class="typeBtn btn secondary"
+                    data-type="series"
+                    onclick="setType('series')"
+                  >
+                    📺 Series
+                  </button>
+
+                  <button
+                    type="button"
+                    class="typeBtn btn secondary"
+                    data-type="season"
+                    onclick="setType('season')"
+                  >
+                    ▤ Season
+                  </button>
+
+                  <button
+                    type="button"
+                    class="typeBtn btn secondary"
+                    data-type="episode"
+                    onclick="setType('episode')"
+                  >
+                    ▶ Episode
+                  </button>
+
+                </div>
+
+                <input
+                  id="formType"
+                  type="hidden"
+                  value="movie"
+                >
+
+              </div>
+
+
+              <!-- TITLE / YEAR -->
+
+              <div class="grid grid-cols-2 gap-5">
+
+                <div>
+
+                  <label class="text-sm text-slate-300">
+                    Title / Name *
+                  </label>
+
+                  <input
+                    id="title"
+                    class="input mt-2"
+                    placeholder="Movie or Series name"
+                    required
+                  >
+
+                </div>
+
+
+                <div>
+
+                  <label class="text-sm text-slate-300">
+                    Year
+                  </label>
+
+                  <input
+                    id="year"
+                    class="input mt-2"
+                    placeholder="2026"
+                  >
+
+                </div>
+
+              </div>
+
+
+              <!-- SERIES -->
+
+              <div
+                id="seriesParent"
+                class="hidden-view"
+              >
+
+                <label class="text-sm text-slate-300">
+                  Parent Series *
+                </label>
+
+                <select
+                  id="seriesId"
+                  class="input mt-2"
+                ></select>
+
+              </div>
+
+
+              <!-- SEASON -->
+
+              <div
+                id="seasonBox"
+                class="hidden-view grid grid-cols-2 gap-5"
+              >
+
+                <div>
+
+                  <label class="text-sm text-slate-300">
+                    Season Number *
+                  </label>
+
+                  <input
+                    id="season"
+                    class="input mt-2"
+                    type="number"
+                    min="1"
+                    placeholder="1"
+                  >
+
+                </div>
+
+
+                <div>
+
+                  <label class="text-sm text-slate-300">
+                    Season Title
+                  </label>
+
+                  <input
+                    id="seasonTitle"
+                    class="input mt-2"
+                    placeholder="Season 1"
+                  >
+
+                </div>
+
+              </div>
+
+
+              <!-- EPISODE -->
+
+              <div
+                id="episodeBox"
+                class="hidden-view grid grid-cols-3 gap-5"
+              >
+
+                <div>
+
+                  <label class="text-sm text-slate-300">
+                    Season Number *
+                  </label>
+
+                  <input
+                    id="episodeSeason"
+                    class="input mt-2"
+                    type="number"
+                    min="1"
+                  >
+
+                </div>
+
+
+                <div>
+
+                  <label class="text-sm text-slate-300">
+                    Episode Number *
+                  </label>
+
+                  <input
+                    id="episode"
+                    class="input mt-2"
+                    type="number"
+                    min="1"
+                  >
+
+                </div>
+
+
+                <div>
+
+                  <label class="text-sm text-slate-300">
+                    Episode Title
+                  </label>
+
+                  <input
+                    id="episodeTitle"
+                    class="input mt-2"
+                    placeholder="Episode 1"
+                  >
+
+                </div>
+
+              </div>
+
+
+              <!-- MEDIA -->
+
+              <div id="mediaBox" class="space-y-5">
+
+                <div class="grid grid-cols-2 gap-5">
+
+                  <div>
+
+                    <label class="text-sm text-slate-300">
+                      Poster / Thumbnail
+                    </label>
+
+                    <input
+                      id="posterFile"
+                      class="input mt-2"
+                      type="file"
+                      accept="image/*"
+                    >
+
+                    <input
+                      id="poster"
+                      class="input mt-2"
+                      placeholder="Or paste Image URL"
+                    >
+
+                    <p class="text-xs text-slate-500 mt-1">
+                      Upload from PC OR use an image URL.
+                    </p>
+
+                  </div>
+
+
+                  <div>
+
+                    <label class="text-sm text-slate-300">
+                      Backdrop / Banner
+                    </label>
+
+                    <input
+                      id="backdropFile"
+                      class="input mt-2"
+                      type="file"
+                      accept="image/*"
+                    >
+
+                    <input
+                      id="backdrop"
+                      class="input mt-2"
+                      placeholder="Or paste Backdrop URL"
+                    >
+
+                  </div>
+
+                </div>
+
+
+                <!-- VIDEO -->
+
+                <div id="videoBox">
+
+                  <label class="text-sm text-slate-300">
+                    Video / Stream Link
+                  </label>
+
+                  <input
+                    id="video"
+                    class="input mt-2"
+                    type="url"
+                    placeholder="https://your-video-host.com/movie.mp4"
+                  >
+
+                  <p class="text-xs text-slate-500 mt-1">
+                    Paste a playable or embeddable video URL.
+                    Do not upload large movie files here.
+                  </p>
+
+                </div>
+
+
+                <!-- DESCRIPTION -->
+
+                <div>
+
+                  <label class="text-sm text-slate-300">
+                    Description
+                  </label>
+
+                  <textarea
+                    id="description"
+                    class="input mt-2"
+                    placeholder="Write a description..."
+                  ></textarea>
+
+                </div>
+
+
+                <!-- GENRE / DURATION -->
+
+                <div class="grid grid-cols-2 gap-5">
+
+                  <div>
+
+                    <label class="text-sm text-slate-300">
+                      Genre
+                    </label>
+
+                    <input
+                      id="genre"
+                      class="input mt-2"
+                      placeholder="Action"
+                    >
+
+                  </div>
+
+
+                  <div>
+
+                    <label class="text-sm text-slate-300">
+                      Duration
+                    </label>
+
+                    <input
+                      id="duration"
+                      class="input mt-2"
+                      placeholder="2h 08m"
+                    >
+
+                  </div>
+
+                </div>
+
+
+                <!-- TAGS -->
+
+                <div>
+
+                  <label class="text-sm text-slate-300">
+                    Hashtags / Tags
+                  </label>
+
+                  <input
+                    id="tags"
+                    class="input mt-2"
+                    placeholder="#action #sci-fi #new"
+                  >
+
+                  <p class="text-xs text-slate-500 mt-1">
+                    Separate tags with spaces or commas.
+                  </p>
+
+                </div>
+
+
+                <!-- CATEGORIES -->
+
+                <div>
+
+                  <label class="text-sm text-slate-300">
+                    Categories
+                  </label>
+
+                  <div
+                    id="categoryChecks"
+                    class="flex flex-wrap gap-2 mt-2"
+                  ></div>
+
+                </div>
+
+
+                <!-- SWITCHES -->
+
+                <div class="grid grid-cols-3 gap-4">
+
+                  <label class="glass rounded-xl p-4 flex items-center justify-between">
+
+                    <div>
+                      <div class="font-semibold text-sm">
+                        Home Page
+                      </div>
+
+                      <div class="text-xs text-slate-500">
+                        Show on home
+                      </div>
+                    </div>
+
+                    <span class="switch">
+                      <input id="home" type="checkbox" checked>
+                      <span class="slider"></span>
+                    </span>
+
+                  </label>
+
+
+                  <label class="glass rounded-xl p-4 flex items-center justify-between">
+
+                    <div>
+                      <div class="font-semibold text-sm">
+                        Trending
+                      </div>
+
+                      <div class="text-xs text-slate-500">
+                        Show in Trending
+                      </div>
+                    </div>
+
+                    <span class="switch">
+                      <input id="trending" type="checkbox">
+                      <span class="slider"></span>
+                    </span>
+
+                  </label>
+
+
+                  <label class="glass rounded-xl p-4 flex items-center justify-between">
+
+                    <div>
+                      <div class="font-semibold text-sm">
+                        Hero Banner
+                      </div>
+
+                      <div class="text-xs text-slate-500">
+                        Enable for Hero
+                      </div>
+                    </div>
+
+                    <span class="switch">
+                      <input id="hero" type="checkbox">
+                      <span class="slider"></span>
+                    </span>
+
+                  </label>
+
+                </div>
+
+
+                <div id="heroOrderBox" class="hidden-view">
+
+                  <label class="text-sm text-slate-300">
+                    Hero Order
+                  </label>
+
+                  <input
+                    id="heroOrder"
+                    class="input mt-2"
+                    type="number"
+                    min="0"
+                    value="0"
+                  >
+
+                </div>
+
+              </div>
+
+
+              <div class="flex gap-3">
+
+                <button
+                  class="btn primary px-7"
+                  type="submit"
+                >
+                  Publish / Save
+                </button>
+
+                <button
+                  class="btn secondary"
+                  type="button"
+                  onclick="showView('content')"
+                >
+                  Cancel
+                </button>
+
+              </div>
+
+            </form>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- =====================================================
+           SERIES MANAGER
+      ====================================================== -->
+
+      <section id="view-series" class="view hidden-view">
+
+        <div class="glass rounded-2xl p-6">
+
+          <div class="flex justify-between items-center mb-6">
+
+            <div>
+              <h2 class="text-xl font-bold">
+                Series Manager
+              </h2>
+
+              <p class="text-sm text-slate-500">
+                Series → Seasons → Episodes
+              </p>
+            </div>
+
+            <button
+              class="btn primary"
+              onclick="openAdd('series')"
+            >
+              ＋ Add Series
+            </button>
+
+          </div>
+
+
+          <div id="seriesManager"></div>
+
+        </div>
+
+      </section>
+
+
+      <!-- =====================================================
+           HERO MANAGER
+      ====================================================== -->
+
+      <section id="view-hero" class="view hidden-view">
+
+        <div class="glass rounded-2xl p-6">
+
+          <h2 class="text-xl font-bold">
+            Hero Manager
+          </h2>
+
+          <p class="text-sm text-slate-500 mt-1 mb-6">
+            Manage homepage hero banners and their order.
+          </p>
+
+          <div id="heroManager"></div>
+
+        </div>
+
+      </section>
+
+
+      <!-- =====================================================
+           CATEGORIES
+      ====================================================== -->
+
+      <section id="view-categories" class="view hidden-view">
+
+        <div class="grid grid-cols-3 gap-5">
+
+          <div class="glass rounded-2xl p-6">
+
+            <h2 class="text-lg font-bold">
+              Add Category
+            </h2>
+
+            <form id="categoryForm" class="mt-5 space-y-3">
+
+              <input
+                id="newCategory"
+                class="input"
+                placeholder="e.g. Fantasy"
+                required
+              >
+
+              <button
+                class="btn primary w-full"
+                type="submit"
+              >
+                Add Category
+              </button>
+
+            </form>
+
+          </div>
+
+
+          <div class="glass rounded-2xl p-6 col-span-2">
+
+            <h2 class="text-lg font-bold mb-4">
+              Categories
+            </h2>
+
+            <div
+              id="categoryList"
+              class="grid grid-cols-3 gap-3"
+            ></div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- =====================================================
+           ANNOUNCEMENTS
+      ====================================================== -->
+
+      <section id="view-announcements" class="view hidden-view">
+
+        <div class="grid grid-cols-3 gap-5">
+
+          <div class="glass rounded-2xl p-6">
+
+            <h2 class="text-lg font-bold">
+              Publish Announcement
+            </h2>
+
+            <form
+              id="announcementForm"
+              class="space-y-4 mt-5"
+            >
+
+              <input
+                id="annTitle"
+                class="input"
+                placeholder="Announcement title"
+                required
+              >
+
+              <textarea
+                id="annText"
+                class="input"
+                placeholder="Announcement message..."
+                required
+              ></textarea>
+
+              <input
+                id="annImage"
+                class="input"
+                placeholder="Image URL (optional)"
+              >
+
+              <label class="glass rounded-xl p-3 flex justify-between items-center">
+
+                <span class="text-sm">
+                  Publish now
+                </span>
+
+                <span class="switch">
+                  <input
+                    id="annActive"
+                    type="checkbox"
+                    checked
+                  >
+                  <span class="slider"></span>
+                </span>
+
+              </label>
+
+              <button
+                class="btn primary w-full"
+                type="submit"
+              >
+                Publish
+              </button>
+
+            </form>
+
+          </div>
+
+
+          <div class="glass rounded-2xl p-6 col-span-2">
+
+            <h2 class="text-lg font-bold mb-4">
+              Published Announcements
+            </h2>
+
+            <div
+              id="announcementList"
+              class="space-y-3"
+            ></div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- =====================================================
+           FEEDBACK
+      ====================================================== -->
+
+      <section id="view-feedback" class="view hidden-view">
+
+        <div class="glass rounded-2xl p-6">
+
+          <h2 class="text-xl font-bold">
+            User Feedback
+          </h2>
+
+          <p class="text-sm text-slate-500 mt-1 mb-6">
+            Read and manage feedback from users.
+          </p>
+
+          <div
+            id="feedbackList"
+            class="space-y-3"
+          ></div>
+
+        </div>
+
+      </section>
+
+
+      <!-- =====================================================
+           SETTINGS
+      ====================================================== -->
+
+      <section id="view-settings" class="view hidden-view">
+
+        <div class="max-w-3xl glass rounded-2xl p-6">
+
+          <h2 class="text-xl font-bold">
+            Site Settings
+          </h2>
+
+          <p class="text-sm text-slate-500 mt-1">
+            Global controls for the main website.
+          </p>
+
+
+          <form
+            id="settingsForm"
+            class="space-y-4 mt-6"
+          >
+
+            <label class="glass rounded-xl p-4 flex justify-between items-center">
+
+              <div>
+                <b>Show Trending Section</b>
+
+                <div class="text-xs text-slate-500 mt-1">
+                  Global Trending visibility
+                </div>
+              </div>
+
+              <span class="switch">
+                <input
+                  id="showTrending"
+                  type="checkbox"
+                  checked
+                >
+                <span class="slider"></span>
+              </span>
+
+            </label>
+
+
+            <label class="glass rounded-xl p-4 flex justify-between items-center">
+
+              <div>
+                <b>Show Hero Slider</b>
+
+                <div class="text-xs text-slate-500 mt-1">
+                  Global Hero visibility
+                </div>
+              </div>
+
+              <span class="switch">
+                <input
+                  id="showHero"
+                  type="checkbox"
+                  checked
+                >
+                <span class="slider"></span>
+              </span>
+
+            </label>
+
+
+            <label class="glass rounded-xl p-4 flex justify-between items-center">
+
+              <div>
+                <b>Show Announcements</b>
+
+                <div class="text-xs text-slate-500 mt-1">
+                  Global announcement visibility
+                </div>
+              </div>
+
+              <span class="switch">
+                <input
+                  id="showAnnouncements"
+                  type="checkbox"
+                  checked
+                >
+                <span class="slider"></span>
+              </span>
+
+            </label>
+
+
+            <button
+              class="btn primary"
+              type="submit"
+            >
+              Save Settings
+            </button>
+
+          </form>
+
+        </div>
+
+      </section>
+
+    </div>
+
+  </main>
+
+</div>
+
+
+<!-- =========================================================
+     DELETE MODAL
+========================================================= -->
+
+<div
+  id="deleteModal"
+  class="hidden fixed inset-0 z-[90] bg-black/75 backdrop-blur flex items-center justify-center p-6"
+>
+
+  <div class="glass rounded-2xl w-full max-w-md p-6">
+
+    <h2 class="text-xl font-bold">
+      Delete this item?
+    </h2>
+
+    <p
+      id="deleteMessage"
+      class="text-sm text-slate-400 mt-2"
+    >
+      This action cannot be undone.
+    </p>
+
+    <div class="flex gap-3 mt-6">
+
+      <button
+        class="btn danger flex-1"
+        onclick="confirmDelete()"
+      >
+        Delete
+      </button>
+
+      <button
+        class="btn secondary flex-1"
+        onclick="closeDelete()"
+      >
+        Cancel
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- TOAST -->
+
+<div
+  id="toastBox"
+  class="fixed right-6 bottom-6 z-[100] space-y-2"
+></div>
+
+
+<!-- =========================================================
+     FIREBASE + APPLICATION
+========================================================= -->
+
+<script type="module">
+
+import {
+  initializeApp
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+import {
+  getFirestore,
+  collection,
+  doc,
+  addDoc,
+  setDoc,
+  updateDoc,
+  deleteDoc,
+  onSnapshot,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+import {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+
+
+/* ==========================================================
+   FIREBASE CONFIG
+========================================================== */
+
+const firebaseConfig = {
+
+  apiKey:
+    "AIzaSyB7plp1faENBBDiGifhfHeBPwqAh4e_fKU",
+
+  authDomain:
+    "steam-with.firebaseapp.com",
+
+  projectId:
+    "steam-with",
+
+  storageBucket:
+    "steam-with.firebasestorage.app",
+
+  messagingSenderId:
+    "40181516141",
+
+  appId:
+    "1:40181516141:web:049f60cdb97bba3489fc64"
+};
+
+
+const firebaseApp =
+  initializeApp(firebaseConfig);
+
+const auth =
+  getAuth(firebaseApp);
+
+const db =
+  getFirestore(firebaseApp);
+
+const storage =
+  getStorage(firebaseApp);
+
+
+/* ==========================================================
+   STATE
+========================================================== */
+
+const state = {
+
+  user: null,
+
+  media: [],
+
+  categories: [],
+
+  announcements: [],
+
+  feedback: [],
+
+  settings: {
+
+    showTrending: true,
+
+    showHero: true,
+
+    showAnnouncements: true
+
+  },
+
+  deleteTarget: null
+
+};
+
+
+/* ==========================================================
+   SHORTCUT
+========================================================== */
+
+const $ = id =>
+  document.getElementById(id);
+
+
+/* ==========================================================
+   TOAST
+========================================================== */
+
+function toast(message, type="success") {
+
+  const div =
+    document.createElement("div");
+
+  div.className =
+    "toast glass rounded-xl px-4 py-3 min-w-[280px] text-sm";
+
+  if(type === "error") {
+
+    div.classList.add(
+      "border-rose-500/30",
+      "text-rose-300"
+    );
+
+  } else {
+
+    div.classList.add(
+      "border-emerald-500/30",
+      "text-emerald-300"
+    );
+
+  }
+
+  div.textContent = message;
+
+  $("toastBox").appendChild(div);
+
+  setTimeout(() => {
+
+    div.remove();
+
+  }, 3200);
+
+}
+
+
+/* ==========================================================
+   NAVIGATION
+========================================================== */
+
+window.showView = function(view) {
+
+  document
+    .querySelectorAll(".view")
+    .forEach(section => {
+
+      section.classList.add(
+        "hidden-view"
+      );
+
+    });
+
+
+  const target =
+    $("view-" + view);
+
+  if(target) {
+
+    target.classList.remove(
+      "hidden-view"
+    );
+
+  }
+
+
+  document
+    .querySelectorAll(".nav")
+    .forEach(button => {
+
+      button.classList.toggle(
+        "active",
+        button.dataset.view === view
+      );
+
+    });
+
+
+  const titles = {
+
+    dashboard: [
+      "Dashboard",
+      "Manage your entire YEADI STREAM website."
+    ],
+
+    content: [
+      "Content Library",
+      "Search, edit, publish and delete content."
+    ],
+
+    add: [
+      "Add Content",
+      "Create movies, anime, series, seasons and episodes."
+    ],
+
+    series: [
+      "Series Manager",
+      "Manage Series → Seasons → Episodes."
+    ],
+
+    hero: [
+      "Hero Manager",
+      "Control homepage hero content."
+    ],
+
+    categories: [
+      "Categories",
+      "Manage website categories."
+    ],
+
+    announcements: [
+      "Announcements",
+      "Publish notices to users."
+    ],
+
+    feedback: [
+      "Feedback",
+      "Read and manage user feedback."
+    ],
+
+    settings: [
+      "Site Settings",
+      "Global website controls."
+    ]
+
+  };
+
+
+  if(titles[view]) {
+
+    $("pageTitle").textContent =
+      titles[view][0];
+
+    $("pageSubtitle").textContent =
+      titles[view][1];
+
+  }
+
+
+  if(view === "content")
+    renderContent();
+
+  if(view === "series")
+    renderSeries();
+
+  if(view === "hero")
+    renderHero();
+
+  if(view === "categories")
+    renderCategories();
+
+  if(view === "announcements")
+    renderAnnouncements();
+
+  if(view === "feedback")
+    renderFeedback();
+
+  if(view === "settings")
+    loadSettings();
+
+};
+
+
+document
+  .querySelectorAll(".nav")
+  .forEach(button => {
+
+    button.addEventListener(
+      "click",
+      () => showView(button.dataset.view)
+    );
+
+  });
+
+
+/* ==========================================================
+   LOGIN
+========================================================== */
+
+$("loginForm")
+  .addEventListener("submit", async event => {
+
+    event.preventDefault();
+
+    $("loginError")
+      .classList.add("hidden");
+
+    try {
+
+      await signInWithEmailAndPassword(
+
+        auth,
+
+        $("loginEmail")
+          .value
+          .trim(),
+
+        $("loginPassword")
+          .value
+
+      );
+
+    }
+
+    catch(error) {
+
+      $("loginError")
+        .textContent =
+          firebaseError(error);
+
+      $("loginError")
+        .classList.remove("hidden");
+
+    }
+
+  });
+
+
+function firebaseError(error) {
+
+  const errors = {
+
+    "auth/invalid-credential":
+      "Email or password is incorrect.",
+
+    "auth/invalid-email":
+      "Please enter a valid email.",
+
+    "auth/user-disabled":
+      "This admin account is disabled.",
+
+    "auth/too-many-requests":
+      "Too many attempts. Try again later."
+
+  };
+
+  return errors[error.code] ||
+    error.message ||
+    "Login failed.";
+
+}
+
+
+$("logoutBtn")
+  .addEventListener("click", () => {
+
+    signOut(auth);
+
+  });
+
+
+/* ==========================================================
+   AUTH STATE
+========================================================== */
+
+onAuthStateChanged(
+  auth,
+  user => {
+
+    state.user = user;
+
+    if(user) {
+
+      $("loginScreen")
+        .classList.add("hidden");
+
+      $("app")
+        .classList.remove("hidden");
+
+      $("adminEmail")
+        .textContent =
+          user.email || "Admin";
+
+      subscribe();
+
+    }
+
+    else {
+
+      $("app")
+        .classList.add("hidden");
+
+      $("loginScreen")
+        .classList.remove("hidden");
+
+    }
+
+  }
+);
+
+
+/* ==========================================================
+   FIRESTORE LISTENERS
+========================================================== */
+
+let unsubscribe = [];
+
+
+function subscribe() {
+
+  unsubscribe.forEach(fn => fn());
+
+  unsubscribe = [];
+
+
+  unsubscribe.push(
+
+    onSnapshot(
+      collection(db,"mediaDatabase"),
+      snapshot => {
+
+        state.media =
+          snapshot.docs.map(
+            doc => ({
+              id: doc.id,
+              ...doc.data()
+            })
+          );
+
+        updateStats();
+
+        renderContent();
+
+        renderSeries();
+
+        renderHero();
+
+        populateSeries();
+
+      }
+    )
+
+  );
+
+
+  unsubscribe.push(
+
+    onSnapshot(
+      collection(db,"categories"),
+      snapshot => {
+
+        state.categories =
+          snapshot.docs.map(
+            doc => ({
+              id: doc.id,
+              ...doc.data()
+            })
+          )
+          .sort(
+            (a,b) =>
+              (a.name || "")
+              .localeCompare(
+                b.name || ""
+              )
+          );
+
+        renderCategories();
+
+        renderCategoryChecks();
+
+        populateSeries();
+
+      }
+    )
+
+  );
+
+
+  unsubscribe.push(
+
+    onSnapshot(
+      collection(db,"announcements"),
+      snapshot => {
+
+        state.announcements =
+          snapshot.docs.map(
+            doc => ({
+              id: doc.id,
+              ...doc.data()
+            })
+          );
+
+        renderAnnouncements();
+
+      }
+    )
+
+  );
+
+
+  unsubscribe.push(
+
+    onSnapshot(
+      collection(db,"admin_alerts"),
+      snapshot => {
+
+        state.feedback =
+          snapshot.docs.map(
+            doc => ({
+              id: doc.id,
+              ...doc.data()
+            })
+          );
+
+        renderFeedback();
+
+      }
+    )
+
+  );
+
+
+  unsubscribe.push(
+
+    onSnapshot(
+      doc(
+        db,
+        "siteSettings",
+        "home"
+      ),
+
+      snapshot => {
+
+        if(snapshot.exists()) {
+
+          state.settings =
+            {
+              ...state.settings,
+              ...snapshot.data()
+            };
+
+        }
+
+        loadSettings();
+
+      }
+
+    )
+
+  );
+
+}
+
+
+/* ==========================================================
+   STATS
+========================================================== */
+
+function updateStats() {
+
+  $("statTotal").textContent =
+    state.media.length;
+
+  $("statMovies").textContent =
+    state.media.filter(
+      x => x.type === "movie"
+    ).length;
+
+  $("statSeries").textContent =
+    state.media.filter(
+      x => x.type === "series"
+    ).length;
+
+  $("statEpisodes").textContent =
+    state.media.filter(
+      x => x.type === "episode"
+    ).length;
+
+}
+
+
+/* ==========================================================
+   ADD FORM
+========================================================== */
+
+window.openAdd = function(type) {
+
+  resetForm();
+
+  setType(type);
+
+  showView("add");
+
+};
+
+
+window.setType = function(type) {
+
+  $("formType").value =
+    type;
+
+  $("formTitle").textContent =
+    "Add " +
+    type.charAt(0).toUpperCase() +
+    type.slice(1);
+
+
+  document
+    .querySelectorAll(".typeBtn")
+    .forEach(button => {
+
+      button.classList.toggle(
+        "border-accent",
+        button.dataset.type === type
+      );
+
+    });
+
+
+  const parent =
+    type === "season" ||
+    type === "episode";
+
+  const season =
+    type === "season";
+
+  const episode =
+    type === "episode";
+
+  const media =
+    type !== "season";
+
+
+  $("seriesParent")
+    .classList.toggle(
+      "hidden-view",
+      !parent
+    );
+
+  $("seasonBox")
+    .classList.toggle(
+      "hidden-view",
+      !season
+    );
+
+  $("episodeBox")
+    .classList.toggle(
+      "hidden-view",
+      !episode
+    );
+
+  $("mediaBox")
+    .classList.toggle(
+      "hidden-view",
+      !media
+    );
+
+
+  $("videoBox")
+    .classList.toggle(
+      "hidden-view",
+      !(type === "movie" ||
+        type === "anime" ||
+        type === "episode")
+    );
+
+};
+
+
+function resetForm() {
+
+  $("mediaForm").reset();
+
+  $("editId").value = "";
+
+  $("home").checked = true;
+
+  setType("movie");
+
+  renderCategoryChecks();
+
+}
+
+
+window.resetForm =
+  resetForm;
+
+
+/* ==========================================================
+   CATEGORY CHECKBOXES
+========================================================== */
+
+function renderCategoryChecks(
+  selected = []
+) {
+
+  if(!state.categories.length) {
+
+    $("categoryChecks").innerHTML =
+      `<span class="text-sm text-slate-600">
+        No categories yet. Add them first.
+      </span>`;
+
+    return;
+
+  }
+
+
+  $("categoryChecks").innerHTML =
+    state.categories.map(category => {
+
+      const checked =
+        selected.includes(
+          category.name
+        )
+          ? "checked"
+          : "";
+
+
+      return `
+
+        <label class="cursor-pointer">
+
+          <input
+            type="checkbox"
+            class="categoryInput hidden"
+            value="${escapeHtml(category.name)}"
+            ${checked}
+          >
+
+          <span
+            class="inline-flex px-3 py-2 rounded-full
+                   border border-line
+                   bg-panel2
+                   text-slate-400
+                   hover:border-accent
+                   text-sm"
+          >
+            ${escapeHtml(category.name)}
+          </span>
+
+        </label>
+
+      `;
+
+    }).join("");
+
+}
+
+
+function selectedCategories() {
+
+  return [
+    ...document
+      .querySelectorAll(
+        ".categoryInput:checked"
+      )
+  ].map(
+    input => input.value
+  );
+
+}
+
+
+/* ==========================================================
+   SERIES SELECT
+========================================================== */
+
+function populateSeries() {
+
+  const series =
+    state.media.filter(
+      x => x.type === "series"
+    );
+
+
+  $("seriesId").innerHTML =
+    `<option value="">
+      Select a series...
+    </option>` +
+
+    series.map(
+      x =>
+        `<option value="${escapeHtml(x.id)}">
+          ${escapeHtml(x.title)}
+        </option>`
+    ).join("");
+
+}
+
+
+/* ==========================================================
+   MEDIA SAVE
+========================================================== */
+
+$("mediaForm")
+  .addEventListener(
+    "submit",
+    async event => {
+
+      event.preventDefault();
+
+
+      const type =
+        $("formType").value;
+
+      const editId =
+        $("editId").value;
+
+
+      try {
+
+        const poster =
+          await getImage(
+            $("posterFile").files[0],
+            $("poster").value.trim(),
+            "posters"
+          );
+
+
+        const backdrop =
+          await getImage(
+            $("backdropFile").files[0],
+            $("backdrop").value.trim(),
+            "backdrops"
+          );
+
+
+        const data = {
+
+          title:
+            $("title").value.trim(),
+
+          type,
+
+          year:
+            $("year").value.trim(),
+
+          poster,
+
+          backdrop,
+
+          video:
+            $("video").value.trim(),
+
+          description:
+            $("description")
+              .value
+              .trim(),
+
+          genre:
+            $("genre")
+              .value
+              .trim(),
+
+          duration:
+            $("duration")
+              .value
+              .trim(),
+
+          tags:
+            parseTags(
+              $("tags").value
+            ),
+
+          categories:
+            selectedCategories(),
+
+          home:
+            $("home").checked,
+
+          trending:
+            $("trending").checked,
+
+          isHero:
+            $("hero").checked,
+
+          heroOrder:
+            Number(
+              $("heroOrder").value || 0
+            ),
+
+          updatedAt:
+            serverTimestamp()
+
+        };
+
+
+        /* SERIES */
+
+        if(type === "series") {
+
+          data.seriesId =
+            editId ||
+            slug(
+              data.title
+            );
+
+        }
+
+
+        /* SEASON */
+
+        if(type === "season") {
+
+          if(
+            !$("seriesId").value ||
+            !$("season").value
+          ) {
+
+            toast(
+              "Choose a series and season number.",
+              "error"
+            );
+
+            return;
+
+          }
+
+
+          data.seriesId =
+            $("seriesId").value;
+
+          data.season =
+            Number(
+              $("season").value
+            );
+
+          data.seasonTitle =
+            $("seasonTitle")
+              .value
+              .trim() ||
+            `Season ${data.season}`;
+
+          data.home = false;
+          data.trending = false;
+          data.isHero = false;
+
+        }
+
+
+        /* EPISODE */
+
+        if(type === "episode") {
+
+          if(
+            !$("seriesId").value ||
+            !$("episodeSeason").value ||
+            !$("episode").value
+          ) {
+
+            toast(
+              "Choose series, season and episode.",
+              "error"
+            );
+
+            return;
+
+          }
+
+
+          data.seriesId =
+            $("seriesId").value;
+
+          data.season =
+            Number(
+              $("episodeSeason").value
+            );
+
+          data.episode =
+            Number(
+              $("episode").value
+            );
+
+          data.episodeTitle =
+            $("episodeTitle")
+              .value
+              .trim() ||
+            `Episode ${data.episode}`;
+
+          const parent =
+            state.media.find(
+              x =>
+                x.id ===
+                data.seriesId
+            );
+
+          data.seriesTitle =
+            parent?.title || "";
+
+          data.home = false;
+          data.trending = false;
+          data.isHero = false;
+
+        }
+
+
+        if(!data.title) {
+
+          toast(
+            "Title is required.",
+            "error"
+          );
+
+          return;
+
+        }
+
+
+        if(editId) {
+
+          await updateDoc(
+            doc(
+              db,
+              "mediaDatabase",
+              editId
+            ),
+            data
+          );
+
+          toast(
+            "Content updated successfully."
+          );
+
+        }
+
+        else {
+
+          data.createdAt =
+            serverTimestamp();
+
+          await addDoc(
+            collection(
+              db,
+              "mediaDatabase"
+            ),
+            data
+          );
+
+          toast(
+            "Content published successfully."
+          );
+
+        }
+
+
+        resetForm();
+
+        showView(
+          type === "season" ||
+          type === "episode"
+            ? "series"
+            : "content"
+        );
+
+      }
+
+      catch(error) {
+
+        toast(
+          "Save failed: " +
+          error.message,
+          "error"
+        );
+
+      }
+
+    }
+  );
+
+
+/* ==========================================================
+   IMAGE UPLOAD
+========================================================== */
+
+async function getImage(
+  file,
+  url,
+  folder
+) {
+
+  if(!file)
+    return url || "";
+
+
+  const filename =
+    file.name
+      .replace(
+        /[^a-zA-Z0-9._-]/g,
+        "_"
+      );
+
+
+  const storageRef =
+    ref(
+      storage,
+      `admin/${folder}/${Date.now()}_${filename}`
+    );
+
+
+  await uploadBytes(
+    storageRef,
+    file
+  );
+
+
+  return await getDownloadURL(
+    storageRef
+  );
+
+}
+
+
+/* ==========================================================
+   CONTENT LIBRARY
+========================================================== */
+
+window.renderContent =
+  function() {
+
+    const search =
+      (
+        $("searchContent")
+          ?.value || ""
+      )
+      .toLowerCase()
+      .trim();
+
+
+    const type =
+      $("filterType")
+        ?.value || "";
+
+
+    const status =
+      $("filterStatus")
+        ?.value || "";
+
+
+    let list =
+      state.media.filter(
+        item => {
+
+          const searchable = [
+
+            item.title,
+
+            item.genre,
+
+            ...(item.categories || []),
+
+            ...(item.tags || [])
+
+          ]
+          .join(" ")
+          .toLowerCase();
+
+
+          const matchSearch =
+            !search ||
+            searchable.includes(
+              search
+            );
+
+
+          const matchType =
+            !type ||
+            item.type === type;
+
+
+          let matchStatus = true;
+
+
+          if(status === "home")
+            matchStatus = !!item.home;
+
+          if(status === "trending")
+            matchStatus = !!item.trending;
+
+          if(status === "hero")
+            matchStatus = !!item.isHero;
+
+
+          return (
+            matchSearch &&
+            matchType &&
+            matchStatus
+          );
+
+        }
+      );
+
+
+    list.sort(
+      (a,b) =>
+        (a.title || "")
+        .localeCompare(
+          b.title || ""
+        )
+    );
+
+
+    if(!list.length) {
+
+      $("contentGrid").innerHTML =
+        `<div class="col-span-5 glass rounded-2xl p-12 text-center text-slate-500">
+          No content found.
+        </div>`;
+
+      return;
+
+    }
+
+
+    $("contentGrid").innerHTML =
+      list.map(item => {
+
+        const poster =
+          item.poster ||
+          "https://placehold.co/500x750/10141d/ffffff?text=YEADI";
+
+
+        let meta =
+          item.type;
+
+
+        if(item.type === "episode") {
+
+          meta =
+            `S${item.season} • E${item.episode}`;
+
+        }
+
+
+        return `
+
+          <article
+            class="glass rounded-2xl overflow-hidden group"
+          >
+
+            <div class="relative">
+
+              <img
+                src="${escapeHtml(poster)}"
+                class="poster w-full"
+                onerror="
+                  this.src='https://placehold.co/500x750/10141d/ffffff?text=YEADI'
+                "
+              >
+
+
+              <div
+                class="absolute top-2 left-2 flex flex-wrap gap-1"
+              >
+
+                <span
+                  class="text-[10px] uppercase
+                         font-bold px-2 py-1
+                         rounded-full bg-black/70"
+                >
+                  ${escapeHtml(meta)}
+                </span>
+
+
+                ${
+                  item.trending
+                  ?
+                  `<span class="text-[10px]
+                    font-bold px-2 py-1
+                    rounded-full bg-orange-500/80">
+                    TRENDING
+                  </span>`
+                  :
+                  ""
+                }
+
+              </div>
+
+
+              <div
+                class="absolute inset-x-0 bottom-0
+                       p-3 pt-14
+                       bg-gradient-to-t
+                       from-black
+                       to-transparent
+                       opacity-0
+                       group-hover:opacity-100
+                       transition"
+              >
+
+                <div class="flex gap-2">
+
+                  <button
+                    class="btn secondary text-xs flex-1"
+                    onclick="editContent('${item.id}')"
+                  >
+                    Edit
+                  </button>
+
+                  <button
+                    class="btn danger text-xs"
+                    onclick="
+                      askDelete(
+                        'media',
+                        '${item.id}',
+                        '${escapeHtml(item.title)}'
+                      )
+                    "
+                  >
+                    Delete
+                  </button>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <div class="p-4">
+
+              <div class="font-bold truncate">
+                ${escapeHtml(item.title)}
+              </div>
+
+              <div class="text-xs text-slate-500 mt-1">
+                ${escapeHtml(item.year || "")}
+                ${
+                  item.genre
+                    ? " • " +
+                      escapeHtml(item.genre)
+                    : ""
+                }
+              </div>
+
+
+              <div class="flex flex-wrap gap-1 mt-3">
+
+                ${
+                  (item.categories || [])
+                    .slice(0,3)
+                    .map(
+                      category =>
+                        `<span class="text-[10px]
+                         px-2 py-1 rounded-full
+                         bg-white/5 text-slate-400">
+                          ${escapeHtml(category)}
+                        </span>`
+                    )
+                    .join("")
+                }
+
+              </div>
+
+            </div>
+
+          </article>
+
+        `;
+
+      }).join("");
+
+  };
+
+
+/* ==========================================================
+   EDIT CONTENT
+========================================================== */
+
+window.editContent =
+  function(id) {
+
+    const item =
+      state.media.find(
+        x => x.id === id
+      );
+
+
+    if(!item)
+      return;
+
+
+    showView("add");
+
+
+    $("editId").value =
+      item.id;
+
+
+    $("title").value =
+      item.title || "";
+
+
+    $("year").value =
+      item.year || "";
+
+
+    $("poster").value =
+      item.poster || "";
+
+
+    $("backdrop").value =
+      item.backdrop || "";
+
+
+    $("video").value =
+      item.video || "";
+
+
+    $("description").value =
+      item.description || "";
+
+
+    $("genre").value =
+      item.genre || "";
+
+
+    $("duration").value =
+      item.duration || "";
+
+
+    $("tags").value =
+      (item.tags || [])
+        .join(" ");
+
+
+    $("home").checked =
+      !!item.home;
+
+
+    $("trending").checked =
+      !!item.trending;
+
+
+    $("hero").checked =
+      !!item.isHero;
+
+
+    $("heroOrder").value =
+      item.heroOrder || 0;
+
+
+    setType(item.type);
+
+
+    populateSeries();
+
+
+    $("seriesId").value =
+      item.seriesId || "";
+
+
+    $("season").value =
+      item.season || "";
+
+
+    $("seasonTitle").value =
+      item.seasonTitle || "";
+
+
+    $("episodeSeason").value =
+      item.season || "";
+
+
+    $("episode").value =
+      item.episode || "";
+
+
+    $("episodeTitle").value =
+      item.episodeTitle || "";
+
+
+    renderCategoryChecks(
+      item.categories || []
+    );
+
+  };
+
+
+/* ==========================================================
+   SERIES MANAGER
+========================================================== */
+
+function renderSeries() {
+
+  const series =
+    state.media
+      .filter(
+        x => x.type === "series"
+      )
+      .sort(
+        (a,b) =>
+          (a.title || "")
+          .localeCompare(
+            b.title || ""
+          )
+      );
+
+
+  if(!series.length) {
+
+    $("seriesManager").innerHTML =
+      `<div class="text-center text-slate-500 py-12">
+        No series yet.
+        Add a series to begin.
+      </div>`;
+
+    return;
+
+  }
+
+
+  $("seriesManager").innerHTML =
+    series.map(
+      item => {
+
+        const seasons =
+          state.media
+            .filter(
+              x =>
+                x.type === "season" &&
+                x.seriesId === item.id
+            )
+            .sort(
+              (a,b) =>
+                Number(a.season || 0) -
+                Number(b.season || 0)
+            );
+
+
+        return `
+
+          <div
+            class="border border-line
+                   rounded-2xl
+                   overflow-hidden mb-4"
+          >
+
+            <div
+              class="p-5 bg-panel2
+                     flex justify-between
+                     items-center"
+            >
+
+              <div class="flex items-center gap-4">
+
+                <img
+                  src="${escapeHtml(
+                    item.poster ||
+                    "https://placehold.co/120x180/10141d/fff?text=Y"
+                  )}"
+                  class="w-14 h-20
+                         rounded-lg
+                         object-cover"
+                >
+
+
+                <div>
+
+                  <h3 class="font-bold text-lg">
+                    ${escapeHtml(item.title)}
+                  </h3>
+
+                  <div class="text-xs text-slate-500 mt-1">
+                    ${seasons.length}
+                    season(s)
+                  </div>
+
+                </div>
+
+              </div>
+
+
+              <div class="flex gap-2">
+
+                <button
+                  class="btn secondary text-xs"
+                  onclick="editContent('${item.id}')"
+                >
+                  Edit Series
+                </button>
+
+                <button
+                  class="btn primary text-xs"
+                  onclick="addSeason('${item.id}')"
+                >
+                  ＋ Season
+                </button>
+
+              </div>
+
+            </div>
+
+
+            <div class="p-4">
+
+              ${
+                seasons.length
+                ?
+                seasons.map(
+                  season => {
+
+                    const episodes =
+                      state.media
+                        .filter(
+                          x =>
+                            x.type === "episode" &&
+                            x.seriesId === item.id &&
+                            Number(x.season) ===
+                            Number(season.season)
+                        )
+                        .sort(
+                          (a,b) =>
+                            Number(a.episode || 0) -
+                            Number(b.episode || 0)
+                        );
+
+
+                    return `
+
+                      <div
+                        class="border border-line
+                               rounded-xl
+                               p-4 mb-3"
+                      >
+
+                        <div
+                          class="flex
+                                 justify-between
+                                 items-center"
+                        >
+
+                          <div>
+
+                            <b>
+                              ${escapeHtml(
+                                season.seasonTitle ||
+                                "Season " +
+                                season.season
+                              )}
+                            </b>
+
+                            <span
+                              class="text-xs
+                                     text-slate-500 ml-2"
+                            >
+                              ${episodes.length}
+                              episode(s)
+                            </span>
+
+                          </div>
+
+
+                          <div class="flex gap-2">
+
+                            <button
+                              class="btn secondary text-xs"
+                              onclick="
+                                editContent(
+                                  '${season.id}'
+                                )
+                              "
+                            >
+                              Edit
+                            </button>
+
+
+                            <button
+                              class="btn primary text-xs"
+                              onclick="
+                                addEpisode(
+                                  '${item.id}',
+                                  ${Number(season.season)}
+                                )
+                              "
+                            >
+                              ＋ Episode
+                            </button>
+
+                          </div>
+
+                        </div>
+
+
+                        <div
+                          class="flex
+                                 flex-wrap
+                                 gap-2 mt-3"
+                        >
+
+                          ${
+                            episodes.length
+                            ?
+                            episodes.map(
+                              ep =>
+                                `<button
+                                  class="px-3 py-2
+                                         rounded-lg
+                                         bg-white/5
+                                         border border-line
+                                         text-xs
+                                         hover:border-accent"
+                                  onclick="
+                                    editContent(
+                                      '${ep.id}'
+                                    )
+                                  "
+                                >
+                                  E${Number(ep.episode)}
+                                  •
+                                  ${escapeHtml(
+                                    ep.episodeTitle ||
+                                    "Episode " +
+                                    ep.episode
+                                  )}
+                                </button>`
+                            ).join("")
+                            :
+                            `<span
+                              class="text-xs
+                                     text-slate-600"
+                            >
+                              No episodes yet.
+                            </span>`
+                          }
+
+                        </div>
+
+                      </div>
+
+                    `;
+
+                  }
+                ).join("")
+                :
+                `<div
+                  class="text-sm
+                         text-slate-600"
+                >
+                  No seasons yet.
+                </div>`
+              }
+
+            </div>
+
+          </div>
+
+        `;
+
+      }
+    ).join("");
+
+}
+
+
+window.addSeason =
+  function(seriesId) {
+
+    openAdd("season");
+
+    $("seriesId").value =
+      seriesId;
+
+  };
+
+
+window.addEpisode =
+  function(seriesId, season) {
+
+    openAdd("episode");
+
+    $("seriesId").value =
+      seriesId;
+
+    $("episodeSeason").value =
+      season;
+
+  };
+
+
+/* ==========================================================
+   HERO
+========================================================== */
+
+function renderHero() {
+
+  const heroes =
+    state.media
+      .filter(
+        x => x.isHero
+      )
+      .sort(
+        (a,b) =>
+          Number(a.heroOrder || 0) -
+          Number(b.heroOrder || 0)
+      );
+
+
+  if(!heroes.length) {
+
+    $("heroManager").innerHTML =
+      `<div
+        class="text-center
+               text-slate-500
+               py-12"
+      >
+        No Hero items.
+        Turn "Hero Banner" ON while editing content.
+      </div>`;
+
+    return;
+
+  }
+
+
+  $("heroManager").innerHTML =
+    heroes.map(
+      item => `
+
+        <div
+          class="glass rounded-2xl
+                 p-4 mb-3
+                 flex items-center gap-4"
+        >
+
+          <img
+            src="${escapeHtml(
+              item.backdrop ||
+              item.poster ||
+              "https://placehold.co/500x220/10141d/fff?text=YEADI"
+            )}"
+            class="w-48 h-24
+                   rounded-xl
+                   object-cover"
+          >
+
+
+          <div class="flex-1">
+
+            <div class="font-bold">
+              ${escapeHtml(item.title)}
+            </div>
+
+            <div class="text-xs text-slate-500 mt-1">
+              ${escapeHtml(item.type)}
+            </div>
+
+          </div>
+
+
+          <input
+            class="input max-w-[110px]"
+            type="number"
+            min="0"
+            value="${Number(
+              item.heroOrder || 0
+            )}"
+            onchange="
+              updateHeroOrder(
+                '${item.id}',
+                this.value
+              )
+            "
+          >
+
+
+          <button
+            class="btn secondary"
+            onclick="editContent('${item.id}')"
+          >
+            Edit
+          </button>
+
+
+          <button
+            class="btn danger"
+            onclick="
+              removeHero('${item.id}')
+            "
+          >
+            Remove
+          </button>
+
+        </div>
+
+      `
+    ).join("");
+
+}
+
+
+window.updateHeroOrder =
+  async function(id,value) {
+
+    try {
+
+      await updateDoc(
+        doc(
+          db,
+          "mediaDatabase",
+          id
+        ),
+        {
+          heroOrder:
+            Number(value),
+          updatedAt:
+            serverTimestamp()
+        }
+      );
+
+      toast(
+        "Hero order saved."
+      );
+
+    }
+
+    catch(error) {
+
+      toast(
+        "Could not save Hero order.",
+        "error"
+      );
+
+    }
+
+  };
+
+
+window.removeHero =
+  async function(id) {
+
+    try {
+
+      await updateDoc(
+        doc(
+          db,
+          "mediaDatabase",
+          id
+        ),
+        {
+          isHero:false,
+          updatedAt:
+            serverTimestamp()
+        }
+      );
+
+      toast(
+        "Removed from Hero."
+      );
+
+    }
+
+    catch(error) {
+
+      toast(
+        "Update failed.",
+        "error"
+      );
+
+    }
+
+  };
+
+
+/* ==========================================================
+   CATEGORIES
+========================================================== */
+
+function renderCategories() {
+
+  if(!$("categoryList"))
+    return;
+
+
+  if(!state.categories.length) {
+
+    $("categoryList").innerHTML =
+      `<div
+        class="text-sm
+               text-slate-600
+               col-span-3"
+      >
+        No categories.
+      </div>`;
+
+    return;
+
+  }
+
+
+  $("categoryList").innerHTML =
+    state.categories.map(
+      category => `
+
+        <div
+          class="border border-line
+                 rounded-xl p-4
+                 flex justify-between
+                 items-center"
+        >
+
+          <span class="font-semibold">
+            ${escapeHtml(category.name)}
+          </span>
+
+
+          <button
+            class="btn danger text-xs"
+            onclick="
+              askDelete(
+                'category',
+                '${category.id}',
+                '${escapeHtml(category.name)}'
+              )
+            "
+          >
+            Delete
+          </button>
+
+        </div>
+
+      `
+    ).join("");
+
+}
+
+
+$("categoryForm")
+  .addEventListener(
+    "submit",
+    async event => {
+
+      event.preventDefault();
+
+
+      const name =
+        $("newCategory")
+          .value
+          .trim();
+
+
+      if(!name)
+        return;
+
+
+      try {
+
+        const id =
+          slug(name);
+
+
+        await setDoc(
+          doc(
+            db,
+            "categories",
+            id
+          ),
+          {
+            name,
+            createdAt:
+              serverTimestamp()
+          }
+        );
+
+
+        $("newCategory")
+          .value = "";
+
+
+        toast(
+          "Category added."
+        );
+
+      }
+
+      catch(error) {
+
+        toast(
+          "Category failed: " +
+          error.message,
+          "error"
+        );
+
+      }
+
+    }
+  );
+
+
+/* ==========================================================
+   ANNOUNCEMENTS
+========================================================== */
+
+function renderAnnouncements() {
+
+  if(!$("announcementList"))
+    return;
+
+
+  const list =
+    [...state.announcements]
+      .sort(
+        (a,b) =>
+          dateValue(b.createdAt) -
+          dateValue(a.createdAt)
+      );
+
+
+  if(!list.length) {
+
+    $("announcementList").innerHTML =
+      `<div
+        class="text-sm
+               text-slate-600"
+      >
+        No announcements yet.
+      </div>`;
+
+    return;
+
+  }
+
+
+  $("announcementList").innerHTML =
+    list.map(
+      item => `
+
+        <div
+          class="glass rounded-xl p-4"
+        >
+
+          <div
+            class="flex
+                   justify-between
+                   gap-4"
+          >
+
+            <div>
+
+              <b>
+                ${escapeHtml(
+                  item.title ||
+                  "Announcement"
+                )}
+              </b>
+
+              <p
+                class="text-sm
+                       text-slate-400
+                       mt-2"
+              >
+                ${escapeHtml(
+                  item.text || ""
+                )}
+              </p>
+
+              <div
+                class="text-xs
+                       mt-3
+                       ${
+                         item.active === false
+                         ? "text-slate-600"
+                         : "text-emerald-300"
+                       }"
+              >
+                ${
+                  item.active === false
+                  ? "Hidden"
+                  : "Published"
+                }
+              </div>
+
+            </div>
+
+
+            <button
+              class="btn danger text-xs"
+              onclick="
+                askDelete(
+                  'announcement',
+                  '${item.id}',
+                  '${escapeHtml(
+                    item.title || "announcement"
+                  )}'
+                )
+              "
+            >
+              Delete
+            </button>
+
+          </div>
+
+        </div>
+
+      `
+    ).join("");
+
+}
+
+
+$("announcementForm")
+  .addEventListener(
+    "submit",
+    async event => {
+
+      event.preventDefault();
+
+
+      try {
+
+        await addDoc(
+          collection(
+            db,
+            "announcements"
+          ),
+          {
+
+            title:
+              $("annTitle")
+                .value
+                .trim(),
+
+            text:
+              $("annText")
+                .value
+                .trim(),
+
+            image:
+              $("annImage")
+                .value
+                .trim(),
+
+            active:
+              $("annActive")
+                .checked,
+
+            createdAt:
+              serverTimestamp()
+
+          }
+        );
+
+
+        event.target.reset();
+
+        $("annActive")
+          .checked = true;
+
+
+        toast(
+          "Announcement published."
+        );
+
+      }
+
+      catch(error) {
+
+        toast(
+          "Announcement failed.",
+          "error"
+        );
+
+      }
+
+    }
+  );
+
+
+/* ==========================================================
+   FEEDBACK
+========================================================== */
+
+function renderFeedback() {
+
+  if(!$("feedbackList"))
+    return;
+
+
+  if(!state.feedback.length) {
+
+    $("feedbackList").innerHTML =
+      `<div
+        class="text-center
+               text-slate-500
+               py-12"
+      >
+        No feedback alerts.
+      </div>`;
+
+    return;
+
+  }
+
+
+  $("feedbackList").innerHTML =
+    state.feedback.map(
+      item => `
+
+        <div
+          class="glass rounded-xl
+                 p-4
+                 ${
+                   item.read
+                   ? "opacity-60"
+                   : ""
+                 }"
+        >
+
+          <div
+            class="flex
+                   justify-between
+                   gap-4"
+          >
+
+            <div class="flex-1">
+
+              <div
+                class="text-xs
+                       text-slate-500"
+              >
+                ${escapeHtml(
+                  item.email ||
+                  item.userEmail ||
+                  "User"
+                )}
+              </div>
+
+
+              <div
+                class="mt-2
+                       text-slate-200
+                       whitespace-pre-wrap"
+              >
+                ${escapeHtml(
+                  item.text ||
+                  item.message ||
+                  ""
+                )}
+              </div>
+
+
+              <div
+                class="text-xs
+                       text-slate-600
+                       mt-2"
+              >
+                ${formatDate(
+                  item.createdAt
+                )}
+              </div>
+
+            </div>
+
+
+            <div
+              class="flex
+                     gap-2
+                     items-start"
+            >
+
+              ${
+                !item.read
+                ?
+                `<button
+                  class="btn secondary text-xs"
+                  onclick="
+                    markFeedback(
+                      '${item.id}'
+                    )
+                  "
+                >
+                  Mark Read
+                </button>`
+                :
+                ""
+              }
+
+
+              <button
+                class="btn danger text-xs"
+                onclick="
+                  askDelete(
+                    'feedback',
+                    '${item.id}',
+                    'feedback'
+                  )
+                "
+              >
+                Delete
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      `
+    ).join("");
+
+}
+
+
+window.markFeedback =
+  async function(id) {
+
+    try {
+
+      await updateDoc(
+        doc(
+          db,
+          "admin_alerts",
+          id
+        ),
+        {
+          read:true,
+          readAt:
+            serverTimestamp()
+        }
+      );
+
+      toast(
+        "Feedback marked as read."
+      );
+
+    }
+
+    catch(error) {
+
+      toast(
+        "Could not update feedback.",
+        "error"
+      );
+
+    }
+
+  };
+
+
+/* ==========================================================
+   SETTINGS
+========================================================== */
+
+function loadSettings() {
+
+  if(!$("showTrending"))
+    return;
+
+
+  $("showTrending").checked =
+    state.settings.showTrending !== false;
+
+
+  $("showHero").checked =
+    state.settings.showHero !== false;
+
+
+  $("showAnnouncements").checked =
+    state.settings.showAnnouncements !== false;
+
+}
+
+
+$("settingsForm")
+  .addEventListener(
+    "submit",
+    async event => {
+
+      event.preventDefault();
+
+
+      try {
+
+        await setDoc(
+          doc(
+            db,
+            "siteSettings",
+            "home"
+          ),
+          {
+
+            showTrending:
+              $("showTrending")
+                .checked,
+
+            showHero:
+              $("showHero")
+                .checked,
+
+            showAnnouncements:
+              $("showAnnouncements")
+                .checked,
+
+            updatedAt:
+              serverTimestamp()
+
+          },
+          {
+            merge:true
+          }
+        );
+
+
+        toast(
+          "Site settings saved."
+        );
+
+      }
+
+      catch(error) {
+
+        toast(
+          "Settings failed: " +
+          error.message,
+          "error"
+        );
+
+      }
+
+    }
+  );
+
+
+/* ==========================================================
+   DELETE SYSTEM
+========================================================== */
+
+window.askDelete =
+  function(type,id,name) {
+
+    state.deleteTarget = {
+      type,
+      id
+    };
+
+
+    $("deleteMessage")
+      .textContent =
+        `Delete "${name}"? This cannot be undone.`;
+
+
+    $("deleteModal")
+      .classList
+      .remove("hidden");
+
+  };
+
+
+window.closeDelete =
+  function() {
+
+    $("deleteModal")
+      .classList
+      .add("hidden");
+
+    state.deleteTarget =
+      null;
+
+  };
+
+
+window.confirmDelete =
+  async function() {
+
+    if(!state.deleteTarget)
+      return;
+
+
+    const {
+      type,
+      id
+    } =
+      state.deleteTarget;
+
+
+    const collections = {
+
+      media:
+        "mediaDatabase",
+
+      category:
+        "categories",
+
+      announcement:
+        "announcements",
+
+      feedback:
+        "admin_alerts"
+
+    };
+
+
+    try {
+
+      await deleteDoc(
+        doc(
+          db,
+          collections[type],
+          id
+        )
+      );
+
+
+      toast(
+        "Deleted successfully."
+      );
+
+
+      closeDelete();
+
+    }
+
+    catch(error) {
+
+      toast(
+        "Delete failed: " +
+        error.message,
+        "error"
+      );
+
+    }
+
+  };
+
+
+/* ==========================================================
+   HELPERS
+========================================================== */
+
+function parseTags(value) {
+
+  return String(value || "")
+    .split(/[,\s]+/)
+    .map(
+      x => x.trim()
+    )
+    .filter(Boolean)
+    .map(
+      x =>
+        x.startsWith("#")
+        ? x
+        : "#" + x
+    );
+
+}
+
+
+function slug(value) {
+
+  return String(value || "")
+    .toLowerCase()
+    .replace(
+      /[^a-z0-9]+/g,
+      "-"
+    )
+    .replace(
+      /^-|-$/g,
+      "") ||
+    "item-" +
+    Date.now();
+
+}
+
+
+function escapeHtml(value="") {
+
+  return String(value)
+    .replace(
+      /[&<>"']/g,
+      char => ({
+
+        "&":"&amp;",
+        "<":"&lt;",
+        ">":"&gt;",
+        '"':"&quot;",
+        "'":"&#039;"
+
+      })[char]
+    );
+
+}
+
+
+function dateValue(value) {
+
+  if(!value)
+    return 0;
+
+
+  if(
+    typeof value.toMillis ===
+    "function"
+  )
+    return value.toMillis();
+
+
+  if(value.seconds)
+    return value.seconds * 1000;
+
+
+  return (
+    new Date(value).getTime() ||
+    0
+  );
+
+}
+
+
+function formatDate(value) {
+
+  const date =
+    dateValue(value);
+
+
+  if(!date)
+    return "";
+
+
+  return new Date(
+    date
+  ).toLocaleString();
+
+}
+
+
+/* ==========================================================
+   REFRESH
+========================================================== */
+
+$("refreshBtn")
+  .addEventListener(
+    "click",
+    () => {
+
+      updateStats();
+
+      renderContent();
+
+      renderSeries();
+
+      renderHero();
+
+      renderCategories();
+
+      renderAnnouncements();
+
+      renderFeedback();
+
+      renderCategoryChecks();
+
+      populateSeries();
+
+      loadSettings();
+
+      toast(
+        "Data refreshed."
+      );
+
+    }
+  );
+
+
+/* ==========================================================
+   INITIAL
+========================================================== */
+
+resetForm();
+
+</script>
+
+</body>
+</html>
